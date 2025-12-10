@@ -8,20 +8,19 @@ import streamlit as st
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
-# =====================
-# Data loading & cleaning
-# =====================
+# 1. Data loading & cleaning
 
 @st.cache_data
 def load_data():
-    # Use a relative path so it works on Streamlit Cloud
+    # Read in data and define function 
     s = pd.read_csv("social_media_usage.csv")
 
     def clean_sm(x):
         return np.where(x == 1, 1, 0)
 
+    # Create a dataframe called "ss"
     ss = pd.DataFrame({
-        "sm_li": clean_sm(s["web1h"]),  # LinkedIn user target
+        "sm_li": clean_sm(s["web1h"]),  # LinkedIn user target from codebook 
         "income": np.where(s["income"].between(1, 9), s["income"], np.nan),
         "education": np.where(s["educ2"].between(1, 8), s["educ2"], np.nan),
         "parent": clean_sm(s["par"]),
@@ -38,9 +37,7 @@ ss = load_data()
 X = ss[["income", "education", "parent", "married", "female", "age"]]
 y = ss["sm_li"]
 
-# =====================
-# Model training
-# =====================
+# 2. Logistic regression model training
 
 @st.cache_resource
 def train_model(X, y):
@@ -61,9 +58,7 @@ def train_model(X, y):
 
 lr = train_model(X, y)
 
-# =====================
-# Streamlit UI
-# =====================
+# 3. Streamlit UI and visuals  
 
 st.title("Vic's LinkedIn User Prediction App")
 
@@ -99,17 +94,14 @@ prob = lr.predict_proba(newdata)[0, 1]
 st.write(f"**Predicted class:** {pred_class}  (0 = not LinkedIn user, 1 = LinkedIn user)")
 st.write(f"**Estimated probability of using LinkedIn:** {prob:.2%}")
 
-# Interpretation text 
+# Interpretation text for users 
 st.markdown("""
 **How to interpret the result:**  
 Higher income and education tend to increase the probability of LinkedIn use in our model.  
 You can adjust the inputs above to explore how different factors influence the prediction.
 """)
 
-# =====================
 # Probability bar chart
-# =====================
-
 prob_df = pd.DataFrame({
     "class": ["LinkedIn user", "Not LinkedIn user"],
     "probability": [prob, 1 - prob]
