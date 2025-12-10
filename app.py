@@ -6,8 +6,10 @@ import streamlit as st
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
-# 1. Data loading & cleaning
+# Part 2: Three key sections modified from Part 1
+# Data loading & cleaning, Logistic regression model training, and Streamlit UI and visual  
 
+# Data loading & cleaning
 @st.cache_data
 def load_data():
     # Read in data and define function 
@@ -35,8 +37,7 @@ ss = load_data()
 X = ss[["income", "education", "parent", "married", "female", "age"]]
 y = ss["sm_li"]
 
-# 2. Logistic regression model training
-
+# Logistic regression model training
 @st.cache_resource
 def train_model(X, y):
     X_train, X_test, y_train, y_test = train_test_split(
@@ -56,8 +57,7 @@ def train_model(X, y):
 
 lr = train_model(X, y)
 
-# 3. Streamlit UI and visuals  
-
+# Streamlit UI and visual  
 st.title("Vic's LinkedIn User Prediction App")
 
 st.write("Move the sliders / selectors to see how the predicted probability changes.")
